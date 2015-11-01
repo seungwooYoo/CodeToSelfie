@@ -1,5 +1,7 @@
 import pandas as pd
+import numpy as np
 import math
+import cPickle as pickle
 
 if __name__ == "__main__":
     '''
@@ -8,13 +10,15 @@ if __name__ == "__main__":
     0 / TripType - categorized as 38 trips 
                representing the type of shopping trip the customer made
                (should be predicted in test datasets)
+               3~44, 999 - 38 classes
                999 : other category (may be mixtures..?) 
     1 / VisitNumber - an id corresponding to a single trip by a single customer
     2 / Weekday - The weekday of the trip
     3 / Upc - the UPC number of the product purchased (barcode - 12 numeric characters)
     4 / ScanCount - number of the purchased item (-1 : returned)
     5 / DepartmentDescription - Item's department
-    6 / FinelineNumber - refined category (created by Wallmart) - May correlated with department description
+    6 / FinelineNumber - Refined category (created by Wallmart) 
+                         May correlate with department description
     '''
     data_df = pd.read_csv('train.csv', 
                           names=['TripType', 'VisitNumber',
@@ -78,3 +82,34 @@ if __name__ == "__main__":
     '''
     68 unique department classs 
     '''
+
+    '''
+    convert department table to unique id
+    '''
+    for values in missing_removed:
+        cur_department_val = values[5]
+        val_department_table = department_table[cur_department_val]
+        values[5] = val_department_table
+
+    np_data = np.array(missing_removed).astype('double')
+    '''
+    convert trip type to 0~ 38 classes
+    '''
+    triptypes = np_data[:,0]
+    unique_triptypes = np.unique(triptypes)
+
+    unique_triptype_table = {}
+    unique_counter = 0
+    for val in unique_triptypes:
+        if unique_triptype_table.has_key(val) == False:
+            unique_triptype_table[val] = unique_counter
+            unique_counter+=1
+
+    for i in range(len(np_data[:,0])):
+        val = np_data[i, 0]
+        unique_id = unique_triptype_table[val]
+        np_data[i,0] = unique_id
+
+    fid = open('train_data.p', 'wb')
+    pickle.dump(np_data, fid)
+    fid.close()
