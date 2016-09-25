@@ -11,6 +11,7 @@ from keras.utils.np_utils import to_categorical
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation
 from datetime import date 
+import ipdb
 
 data = pd.read_csv('./data/train.csv')
 parent_data = data.copy()
@@ -53,7 +54,10 @@ index = test.pop('id')
 test = StandardScaler().fit(test).transform(test)
 
 yPred = model.predict_proba(test)
-yPred = pd.DataFrame(yPred, index=index, columns=parent_data.species.unique().sort())
+#ipdb.set_trace()
+columns = parent_data.species.unique().tolist()
+columns.sort()
+yPred = pd.DataFrame(yPred, index=index, columns=columns)
 
 cur_date = date.today()
 year = cur_date.year
