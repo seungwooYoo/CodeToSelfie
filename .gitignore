@@ -1,3 +1,11 @@
+# ignores
 *.csv
 *.swp
 *.p
+*.zip
+*.tar
+
+# images
+*.png
+*.jpg
+
