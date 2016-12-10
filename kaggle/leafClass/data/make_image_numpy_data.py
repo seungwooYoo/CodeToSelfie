@@ -50,7 +50,9 @@ def retrieve_all_images(root_path):
 
 if __name__ == "__main__":
     image_variator = ImageVariation()
-    root_img_path = './classwise'
+    root_img_path = './images'
+    if not os.path.exists(root_img_path):
+        os.mkdir(root_img_path)
     all_img_paths = retrieve_all_images(root_img_path)
 
     for img_name in all_img_paths:
